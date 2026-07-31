@@ -132,7 +132,7 @@ function followActiveThread(provider: GithubSignals, context: MastraCodePluginCo
 
 export default defineMastraCodePlugin({
   id: 'codingbutter.github-signals',
-  name: 'GitHub Signals',
+  name: 'GitHub Signals (updated)',
   description: 'Subscribe threads to GitHub pull requests and wake them when CI or review state changes.',
   signalProviders: context => [createProvider(context)],
 });
