@@ -1,0 +1,11 @@
+{
+  "name": "mastracode-github-signals",
+  "version": "0.1.0",
+  "description": "GitHub PR signals for Mastra Code, delivered as a plugin.",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@11.13.1",
+  "dependencies": {
+    "@mastra/github-signals": "0.2.2"
+  }
+}
