@@ -20,6 +20,22 @@ function resolveGitcrawlCommand(): string | undefined {
  * inherit `stop()` from the base class, which only clears the base timer.
  */
 class PluginGithubSignals extends GithubSignals {
+  #context: MastraCodePluginContext;
+
+  constructor(context: MastraCodePluginContext, options: ConstructorParameters<typeof GithubSignals>[0]) {
+    super(options);
+    this.#context = context;
+  }
+
+  /**
+   * Lifecycle hook: Mastra Code calls this once the provider has been registered with Mastra and
+   * connected to the coding agent. Thread-following has to wait for that — reading a thread's
+   * subscriptions needs storage, which arrives with Mastra.
+   */
+  override async start(): Promise<void> {
+    followActiveThread(this, this.#context);
+  }
+
   override stop(): void {
     super.stop();
     this.stopAllPolling();
@@ -27,7 +43,7 @@ class PluginGithubSignals extends GithubSignals {
 }
 
 function createProvider(context: MastraCodePluginContext): GithubSignals {
-  const provider = new PluginGithubSignals({
+  return new PluginGithubSignals(context, {
     cwd: context.cwd,
     gitcrawlCommand: resolveGitcrawlCommand(),
     /**
@@ -82,9 +98,6 @@ function createProvider(context: MastraCodePluginContext): GithubSignals {
       };
     },
   });
-
-  followActiveThread(provider, context);
-  return provider;
 }
 
 /**
@@ -119,7 +132,7 @@ function followActiveThread(provider: GithubSignals, context: MastraCodePluginCo
 
 export default defineMastraCodePlugin({
   id: 'codingbutter.github-signals',
-  name: 'GitHub Signals (updated)',
+  name: 'GitHub Signals',
   description: 'Subscribe threads to GitHub pull requests and wake them when CI or review state changes.',
   signalProviders: context => [createProvider(context)],
 });
