@@ -14,8 +14,20 @@ function resolveGitcrawlCommand(): string | undefined {
   );
 }
 
+/**
+ * Mastra Code stops a plugin's provider when this repository is updated, so shutdown has to clear
+ * the per-thread polling timers this provider keeps in its own map. Released versions up to 0.2.2
+ * inherit `stop()` from the base class, which only clears the base timer.
+ */
+class PluginGithubSignals extends GithubSignals {
+  override stop(): void {
+    super.stop();
+    this.stopAllPolling();
+  }
+}
+
 function createProvider(context: MastraCodePluginContext): GithubSignals {
-  const provider = new GithubSignals({
+  const provider = new PluginGithubSignals({
     cwd: context.cwd,
     gitcrawlCommand: resolveGitcrawlCommand(),
     /**
